@@ -1,13 +1,54 @@
-import React from 'react';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import React, { useState } from 'react';
+import { auth } from '../../Layout/FireBase.init';
+import { FaEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
 
 const SignUp = () => {
+
+
+const [success,setSuccess] =useState(false);
+const [errorPop, seterrorPop]=useState('');
+const [show,setShow]=useState(false);
 
     const handleSignUp = e =>{
         e.preventDefault();
         const email = e.target.email.value;
         const password = e.target.password.value;
+        const terms = e.target.terms.checked;
 
-        console.log(email,password);
+
+        console.log(email,password,terms);
+
+    setSuccess(false);
+     seterrorPop('');
+
+
+    if(!terms){
+        seterrorPop('Please accept Our Terms and Conditions')
+        return;
+    }
+
+     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()\-_=+{};:,<.>]).{8,}$/;
+
+    if(strongPasswordRegex.test(password) === false){
+        seterrorPop("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+       return;
+    }
+
+
+
+     createUserWithEmailAndPassword(auth,email,password)
+     .then(mailPass => {
+        console.log(mailPass);
+        setSuccess(true);
+     })
+     .catch(error => {
+        console.log(error);
+        seterrorPop(error.message);
+     });
+    
+     
         
     }
 
@@ -20,10 +61,42 @@ const SignUp = () => {
           <label className="label">Email</label>
           <input type="email" name='email' className="input" placeholder="Email" />
           <label className="label">Password</label>
-          <input type="password" name='password' className="input" placeholder="Password" />
+
+           <div className='relative'>
+           <input
+            type={show ? 'text' : 'password'}
+             name='password'
+              className="input" 
+              placeholder="Password" />
+            <button
+            type='button'
+            onMouseDown={()=>{setShow(!show)}}
+             className='btn btn-xs absolute top-2 right-8 '>
+                    {
+                        show ?     <FaRegEyeSlash />  : <FaEye />
+                    }
+                
+                </button>
+           </div>
+
           <div><a className="link link-hover">Forgot password?</a></div>
+        
+          <label className="label pt-3">
+          <input type="checkbox" name='terms'  className="checkbox" />
+          <span>
+           I accept the <a href="/terms" className="link link-hover text-blue-500 underline">Terms and Conditions</a>
+          </span>
+           </label>
+           <br />
+        
           <button className="btn btn-neutral mt-4">Sign Up</button>
         </form>
+        {
+            errorPop && <p className='text-red-400'>{errorPop}</p>
+        }
+        {
+            success && <p className='text-green-400'>User has created successfully</p>
+        }
       </div>
     </div>
 
