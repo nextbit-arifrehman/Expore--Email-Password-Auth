@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, sendEmailVerification} from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile} from 'firebase/auth';
 import React, { useState } from 'react';
 import { auth } from '../../Layout/FireBase.init';
 import { FaEye } from "react-icons/fa";
@@ -15,12 +15,14 @@ const SignUp = () => {
 
   const handleSignUp = e => {
     e.preventDefault();
+    const name = e.target.name.value;
+    const photo = e.target.photourl.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
     const terms = e.target.terms.checked;
 
 
-    console.log(email, password, terms);
+    console.log(name,photo,email, password, terms);
 
     setSuccess(false);
     seterrorPop('');
@@ -53,6 +55,20 @@ const SignUp = () => {
           toast("Account created! Please check your email for verification.");
 
         })
+        
+        // update profile 
+        const profile = {
+          displayName:name,
+          photoURL:photo
+        }
+        updateProfile(auth.currentUser,profile)
+         .then(() =>{
+          console.log('User profile updated');
+         })
+
+          .catch(error => {
+            console.log(error);
+          })
 
       })
       .catch(error => {
@@ -69,11 +85,18 @@ const SignUp = () => {
     <div className="card bg-base-100 w-full max-w-sm mx-auto mt-4 shrink-0 shadow-2xl">
       <div className="card-body">
         <h1 className="text-3xl font-bold  ">Please Sign Up now!</h1>
-        <form onSubmit={handleSignUp}>
+        <form onSubmit={handleSignUp} className='space-y-2.5'>
+         
+          <label className="label">Name</label>
+          <input type="text" name='name' className="input" placeholder="Your Name" />
+         
+          <label className="label">Photo Url</label>
+          <input type="text" name='photourl' className="input" placeholder="Photo Url" />
+         
           <label className="label">Email</label>
           <input type="email" name='email' className="input" placeholder="Email" />
+          
           <label className="label">Password</label>
-
           <div className='relative'>
             <input
               type={show ? 'text' : 'password'}
@@ -91,7 +114,7 @@ const SignUp = () => {
             </button>
           </div>
 
-          <div><a className="link link-hover">Forgot password?</a></div>
+        
 
           <label className="label pt-3">
             <input type="checkbox" name='terms' className="checkbox" />
