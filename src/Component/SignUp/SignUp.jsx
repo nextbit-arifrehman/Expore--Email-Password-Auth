@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { auth } from '../../Layout/FireBase.init';
 import { FaEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
+import { Link } from 'react-router';
 
 const SignUp = () => {
 
@@ -90,6 +91,7 @@ const [show,setShow]=useState(false);
            <br />
         
           <button className="btn btn-neutral mt-4">Sign Up</button>
+          <p className='pt-2'>Already have an account? Please <Link className='text-blue-500 underline' to='/login'>Login</Link></p>
         </form>
         {
             errorPop && <p className='text-red-400'>{errorPop}</p>
