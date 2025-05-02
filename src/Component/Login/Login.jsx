@@ -1,5 +1,5 @@
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import React, { useState } from 'react';
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useRef, useState } from 'react';
 import { auth } from '../../Layout/FireBase.init';
 import { Link } from 'react-router';
 import { ToastContainer, toast } from 'react-toastify';
@@ -7,7 +7,8 @@ import { ToastContainer, toast } from 'react-toastify';
 const Login = () => {
 
     const [success, setSuccess] = useState(false);
-    const [errorMessage, seterrorMessage] = useState('')
+    const [errorMessage, seterrorMessage] = useState('');
+    const emailRef =useRef();
 
     const handllogin = e => {
         e.preventDefault();
@@ -33,8 +34,29 @@ const Login = () => {
                 console.log(error);
                 seterrorMessage(error.message);
             });
+    }
+
+    const handleforgetPassword= () => {
+    
+
+        console.log(emailRef.current.value);
+        const email= emailRef.current.value;
+
+        seterrorMessage('');
+
+        // email reset below email come from 42 line
+
+        sendPasswordResetEmail(auth,email)
+        .then(()=> {
+            toast("Password reset email sent. Please check your inbox.")
+        })
+        .catch(error => {
+            seterrorMessage(error.message);
+            
+        })
 
     }
+
     return (
 
         <div className="mt-8 mx-auto card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
@@ -42,10 +64,10 @@ const Login = () => {
                 <h1 className="text-5xl font-bold">Login now!</h1>
                 <form onSubmit={handllogin} className="fieldset">
                     <label className="label">Email</label>
-                    <input type="email" name='email' className="input" placeholder="Email" />
+                    <input type="email" name='email' ref={emailRef} className="input" placeholder="Email" />
                     <label className="label">Password</label>
                     <input type="password" name='password' className="input" placeholder="Password" />
-                    <div><a className="link link-hover">Forgot password?</a></div>
+                    <div onClick={handleforgetPassword}><a className="link link-hover">Forgot password?</a></div>
                     <button className="btn btn-neutral mt-4">Login</button>
                 </form>
                 <p className='pt-2'>New to this website? Please <Link className='text-blue-500 underline' to='/signup'>Sign Up</Link></p>
