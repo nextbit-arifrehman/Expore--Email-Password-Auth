@@ -2,6 +2,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import { auth } from '../../Layout/FireBase.init';
 import { Link } from 'react-router';
+import { ToastContainer, toast } from 'react-toastify';
 
 const Login = () => {
 
@@ -20,7 +21,13 @@ const Login = () => {
         signInWithEmailAndPassword(auth, email, password)
             .then(result => {
                 console.log(result.user);
-                setSuccess(true);
+                if(!result.user.emailVerified){
+                  toast('Please verify your email address');
+                }
+                else{
+                    setSuccess(true);
+                }
+                
             })
             .catch(error => {
                 console.log(error);
@@ -47,6 +54,7 @@ const Login = () => {
                 }
                 {success && <p className='text-green-600'>Login successful!</p>}
             </div>
+               <ToastContainer />
         </div>
 
 
